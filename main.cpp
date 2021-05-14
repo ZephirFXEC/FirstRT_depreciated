@@ -5,7 +5,10 @@
 #include "sphere.h"
 #include "material.h"
 #include <assert.h>
+#include <stdlib.h>
 #include <iostream>
+#include <stdio.h>
+#include <stdint.h>
 #include "framebuffer.h"
 #define _CRT_SECURE_NO_WARNINGS
 using namespace std;
@@ -77,6 +80,7 @@ hittable_list random_scene() {
     return world;
 }
 
+
 int main() {
 
     // Image
@@ -84,7 +88,7 @@ int main() {
     size_t width = 720u;
     size_t height = static_cast<int>(width / aspect_ratio);
     int spp = 100;
-    int max_depth = 5;
+    int max_depth = 4;
 
     //world
 
