@@ -61,6 +61,11 @@ inline double unif_distrib() {
   return unif(rng);
 }
 
+inline int random_int(int min, int max) {
+    // Returns a random integer in [min,max].
+    return static_cast<int>(random_double(min, max+1));
+}
+
 #include "ray.h"
 #include "vec3.h"
 
