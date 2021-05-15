@@ -38,9 +38,9 @@ color ray_color(const ray& r, const hittable& world, int depth){
 hittable_list random_scene() {
     hittable_list world;
 
-    auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
-    world.add(make_shared<sphere>(point3(0,-1000,0), 1000, ground_material));
+    auto checker = make_shared<checker_texture>(color(0.2, 0.3, 0.1), color(0.9, 0.9, 0.9));
 
+    world.add(make_shared<sphere>(point3(0,-1000,0), 1000, make_shared<lambertian>(checker)));
     for (int a = 0; a < 4; a++) {
         for (int b = 0; b < 4; b++) {
             auto choose_mat = random_double();
@@ -89,7 +89,7 @@ int main() {
     // Image
     float aspect_ratio = 16.0f/9.0f;
     size_t width = 400u;
-    size_t height = static_cast<int>(width / aspect_ratio);
+    //size_t height = static_cast<int>(width / aspect_ratio);
     int spp = 100;
     const int max_depth = 50;
 
@@ -104,8 +104,9 @@ int main() {
     vec3 vup(0,1,0);
     float dist_to_focus = 10.0;
     float aperture = 0.1;
+    size_t height = static_cast<int>(width / aspect_ratio);
 
-    camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus, 0.0f, 1.0f);
+    camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
 
     // Render
     framebuffer fb {width , height};

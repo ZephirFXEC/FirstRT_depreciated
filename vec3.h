@@ -50,7 +50,7 @@ class vec3 {
 
 
         inline static vec3 random() {
-            return vec3(unif_distrib(), unif_distrib(), unif_distrib());
+            return vec3(random_double(), random_double(), random_double());
         }
 
         inline static vec3 random(float min, float max) {

@@ -43,23 +43,6 @@ inline double clamp(double x, double min, double max) {
     return x;
 }
 
-inline double unif_distrib(double min, double max) {
-  std::mt19937_64 rng;
-  uint64_t time_seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-  std::seed_seq ss{uint32_t(time_seed & 0xffffffff), uint32_t(time_seed>>32)};
-  rng.seed(ss);
-  std::uniform_real_distribution<double> unif(min,max);
-  return unif(rng);
-}
-
-inline double unif_distrib() {
-  std::mt19937_64 rng;
-  uint64_t time_seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-  std::seed_seq ss{uint32_t(time_seed & 0xffffffff), uint32_t(time_seed>>32)};
-  rng.seed(ss);
-  std::uniform_real_distribution<double> unif(0,1);
-  return unif(rng);
-}
 
 inline int random_int(int min, int max) {
     // Returns a random integer in [min,max].
