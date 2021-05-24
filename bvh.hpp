@@ -1,10 +1,10 @@
 #ifndef BVH_H
 #define BVH_H
 
-#include "rtweekend.h"
+#include "rtweekend.hpp"
 
-#include "hittable.h"
-#include "hittable_list.h"
+#include "hittable.hpp"
+#include "hittable_list.hpp"
 #include <algorithm>
 
 

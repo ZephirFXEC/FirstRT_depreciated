@@ -1,7 +1,7 @@
 #ifndef HITTABLE_LIST_H
 #define HITTABLE_LIST_H
-#include "rtweekend.h"
-#include "hittable.h"
+#include "rtweekend.hpp"
+#include "hittable.hpp"
 #include <memory>
 #include <vector>
 

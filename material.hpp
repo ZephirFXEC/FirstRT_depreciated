@@ -1,8 +1,8 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
-#include "rtweekend.h"
-#include "hittable.h"
-#include "texture.h"
+#include "rtweekend.hpp"
+#include "hittable.hpp"
+#include "texture.hpp"
 
 
 class material {

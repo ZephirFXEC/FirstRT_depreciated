@@ -3,7 +3,7 @@
 
 #include <cmath>
 #include <iostream>
-#include "rtweekend.h"
+#include "rtweekend.hpp"
 #include <random>
 
 using namespace std;

@@ -1,18 +1,18 @@
-#include "rtweekend.h"
-#include "color.h"
-#include "hittable_list.h"
-#include "camera.h"
-#include "sphere.h"
-#include "material.h"
+#include "rtweekend.hpp"
+#include "color.hpp"
+#include "hittable_list.hpp"
+#include "camera.hpp"
+#include "sphere.hpp"
+#include "material.hpp"
 #include <assert.h>
 #include <stdlib.h>
 #include <iostream>
 #include <stdio.h>
 #include <stdint.h>
-#include "framebuffer.h"
-#include "moving_sphere.h"
-#include "aarect.h"
-#include "box.h"
+#include "framebuffer.hpp"
+#include "moving_sphere.hpp"
+#include "aarect.hpp"
+#include "box.hpp"
 #define _CRT_SECURE_NO_WARNINGS
 using namespace std;
 
@@ -221,7 +221,7 @@ int main() {
             world = cornell_box();
             aspect_ratio = 1.0;
             width = 600u;
-            spp = 400u;
+            spp = 100u;
             background = color(0,0,0);
             lookfrom = point3(278, 278, -800);
             lookat = point3(278, 278, 0);

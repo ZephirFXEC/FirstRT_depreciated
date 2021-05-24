@@ -1,8 +1,8 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H
 
-#include "rtweekend.h"
-#include "aabb.h"
+#include "rtweekend.hpp"
+#include "aabb.hpp"
 
 
 class material;

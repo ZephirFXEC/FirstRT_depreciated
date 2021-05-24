@@ -1,9 +1,9 @@
 #ifndef AARECT_H
 #define AARECT_H
 
-#include "rtweekend.h"
+#include "rtweekend.hpp"
 
-#include "hittable.h"
+#include "hittable.hpp"
 
 class xy_rect : public hittable {
     public:
