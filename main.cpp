@@ -11,28 +11,31 @@
 #include <stdint.h>
 #include "framebuffer.h"
 #include "moving_sphere.h"
+#include "aarect.h"
+#include "box.h"
 #define _CRT_SECURE_NO_WARNINGS
 using namespace std;
 
-color ray_color(const ray& r, const hittable& world, int depth){
+color ray_color(const ray& r, const color& background, const hittable& world, int depth){
   hit_record rec;
   if(depth <= 0)
   {
     return color(0,0,0);
   }
 
-  if(world.hit(r, 0.001, infinity, rec))
-  {
+    if(!world.hit(r, 0.001, infinity, rec))
+    {
+        return background;
+    }
+
     ray scattered;
     color attenuation;
-    if (rec.mat_ptr->scatter(r, rec, attenuation, scattered))
-        return attenuation * ray_color(scattered, world, depth-1);
-    return color(0,0,0);
-  }
+    color emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
 
-  vec3 unit_dir = unit_vector(r.direction());
-  auto t = 0.5f * (unit_dir.y() + 1.0f);
-  return (1.0f - t) * color(1.0f, 1.0f, 1.0f) + t*color(0.5f, 0.7f, 1.0f);
+    if(!rec.mat_ptr->scatter(r, rec, attenuation, scattered))
+        return emitted;
+    
+    return emitted + attenuation * ray_color(scattered, background, world, depth-1);
 }
 
 hittable_list random_scene() {
@@ -112,12 +115,52 @@ hittable_list earth() {
     return hittable_list(globe);
 }
 
+hittable_list simple_light() {
+    hittable_list objects;
+
+    auto pertext = make_shared<noise_texture>(4);
+    objects.add(make_shared<sphere>(point3(0,-1000,0), 1000, make_shared<lambertian>(pertext)));
+    objects.add(make_shared<sphere>(point3(0,2,0), 2, make_shared<lambertian>(pertext)));
+
+    auto difflight = make_shared<diffuse_light>(color(4,4,4));
+    objects.add(make_shared<xy_rect>(3, 5, 1, 3, -2, difflight));
+
+    return objects;
+}
+
+hittable_list cornell_box() {
+    hittable_list objects;
+
+    auto red   = make_shared<lambertian>(color(.65, .05, .05));
+    auto white = make_shared<lambertian>(color(.73, .73, .73));
+    auto green = make_shared<lambertian>(color(.12, .45, .15));
+    auto light = make_shared<diffuse_light>(color(15, 15, 15));
+
+    objects.add(make_shared<yz_rect>(0, 555, 0, 555, 555, green));
+    objects.add(make_shared<yz_rect>(0, 555, 0, 555, 0, red));
+    objects.add(make_shared<xz_rect>(213, 343, 227, 332, 554, light));
+    objects.add(make_shared<xz_rect>(0, 555, 0, 555, 0, white));
+    objects.add(make_shared<xz_rect>(0, 555, 0, 555, 555, white));
+    objects.add(make_shared<xy_rect>(0, 555, 0, 555, 555, white));
+    shared_ptr<hittable> box1 = make_shared<box>(point3(0, 0, 0), point3(165, 330, 165), white);
+    box1 = make_shared<rotate_y>(box1, 15);
+    box1 = make_shared<translate>(box1, vec3(265,0,295));
+    objects.add(box1);
+
+    shared_ptr<hittable> box2 = make_shared<box>(point3(0,0,0), point3(165,165,165), white);
+    box2 = make_shared<rotate_y>(box2, -18);
+    box2 = make_shared<translate>(box2, vec3(130,0,65));
+    objects.add(box2);
+
+    return objects;
+}
+
 int main() {
 
     // Image
     float aspect_ratio = 16.0f/9.0f;
     size_t width = 400u;
-    const int spp = 100;
+    size_t spp = 100u;
     const int max_depth = 50;
 
     // World
@@ -126,12 +169,14 @@ int main() {
 
     point3 lookfrom;
     point3 lookat;
-    auto vfov = 40.0;
-    auto aperture = 0.0;
+    float vfov = 40.0;
+    float aperture = 0.0;
+    color background(0,0,0);
 
     switch (0) {
         case 1:
             world = random_scene();
+            background = color(0.70, 0.80, 1.00);
             lookfrom = point3(13,2,3);
             lookat = point3(0,0,0);
             vfov = 20.0;
@@ -140,6 +185,7 @@ int main() {
 
         case 2:
             world = two_spheres();
+            background = color(0.70, 0.80, 1.00);
             lookfrom = point3(13,2,3);
             lookat = point3(0,0,0);
             vfov = 20.0;
@@ -147,17 +193,39 @@ int main() {
 
         case 3:
           world = two_perlin_spheres();
+          background = color(0.70, 0.80, 1.00);
           lookfrom = point3(13,2,3);
           lookat = point3(0,0,0);
           vfov = 20.0;
           break;
 
-        default:
         case 4:
             world = earth();
             lookfrom = point3(13,2,3);
+            background = color(0.70, 0.80, 1.00);
             lookat = point3(0,0,0);
             vfov = 20.0;
+            break;
+        
+        case 5:
+            world = simple_light();
+            spp = 400;
+            background = color(0,0,0);
+            lookfrom = point3(26,3,6);
+            lookat = point3(0,2,0);
+            vfov = 20.0;
+            break;
+
+        default:
+        case 6:
+            world = cornell_box();
+            aspect_ratio = 1.0;
+            width = 600u;
+            spp = 400u;
+            background = color(0,0,0);
+            lookfrom = point3(278, 278, -800);
+            lookat = point3(278, 278, 0);
+            vfov = 40.0;
             break;
         }
 
@@ -179,7 +247,7 @@ int main() {
               const float u = (i + random_double()) / fb.width();
               const float v = (j + random_double()) / fb.height();
               ray r = cam.get_ray(u, v);
-              pixel_color += ray_color(r, world, max_depth);
+              pixel_color += ray_color(r, background, world, max_depth);
           }
           float scale = 1.0f/spp;
           int8_t r = static_cast<int>(256 * clamp(sqrt(scale*pixel_color.x()), 0.0, 0.999));
@@ -192,4 +260,7 @@ int main() {
     fb.save("c:/Users/enzoc/OneDrive/Bureau/raytracing/render.tga");
 
     cerr << "\nDone.\n";
+    cerr << "\nConverting TGA to PNG ... \n";
+    std::system("ffmpeg -i ./render.tga -pix_fmt rgba out.png");
+    cerr << "\nFinish !\n";
 }
